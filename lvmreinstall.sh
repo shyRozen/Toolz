@@ -1,3 +1,9 @@
+while getopts v: flag
+do
+    case "${flag}" in
+        v) version=${OPTARG};;
+    esac
+done
 date +%T; oc get pods -A | grep test | awk {'print $1," ", $2'} | xargs -l bash -c 'oc delete pod $1 -n $0'
 date +%T; oc get pvc -A | grep test | awk {'print $1," ", $2'} | xargs -l bash -c 'oc delete pvc $1 -n $0'
 date +%T; oc get volumesnapshot -A | grep test | awk {'print $1," ", $2'} | xargs bash -c 'oc delete volumesnapshot $1 -n $0'
@@ -25,15 +31,25 @@ spec:
   icon:
     base64data: ''
     mediatype: ''
-  image: quay.io/rhceph-dev/ocs-registry:4.11.0-98
+  image: quay.io/rhceph-dev/ocs-registry:$version
   publisher: Red Hat
   sourceType: grpc
 EOF
+
+start=$(date +%s)
 while true;do
 status=`oc get catalogsource redhat-operators -n openshift-marketplace -o yaml | grep lastObservedState`
 echo $status
 if [[ $status == *"READY"* ]]
 then
+	break
+fi
+end=$(date +%s)
+elapsed=$(($end-$start))
+echo $elapsed
+if [ $elapsed -ge 600 ]
+then
+	echo "Waited 5 minutes and pod is not running "
 	break
 fi
 done
@@ -112,7 +128,7 @@ then
 fi
 end=$(date +%s)
 elapsed=$(($end-$start))
-
+echo $elapsed
 if [ $elapsed -ge 600 ]
 then
 	echo "Waited 5 minutes and pod is not running "

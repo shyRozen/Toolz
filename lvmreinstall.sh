@@ -36,17 +36,18 @@ spec:
   sourceType: grpc
 EOF
 
+
 start=$(date +%s)
-while true;do
+while true
+do
 status=`oc get catalogsource redhat-operators -n openshift-marketplace -o yaml | grep lastObservedState`
-echo $status
+end=$(date +%s)
+elapsed=$(($end-$start))
+echo $status" "$elapsed" sec since probe start"
 if [[ $status == *"READY"* ]]
 then
 	break
 fi
-end=$(date +%s)
-elapsed=$(($end-$start))
-echo $elapsed
 if [ $elapsed -ge 600 ]
 then
 	echo "Waited 5 minutes and pod is not running "
@@ -83,16 +84,17 @@ spec:
   startingCSV: odf-lvm-operator.v4.11.0
 EOF
 start=$(date +%s)
-while true;do
+while true
+do
 status=`oc get pods -n openshift-storage | grep lvm-operator`
-echo $status
+end=$(date +%s)
+elapsed=$(($end-$start))
+echo $status" "$elapsed" sec since probe start"
+
 if [[ $status == *"Running"* ]]
 then
 	break
 fi
-end=$(date +%s)
-elapsed=$(($end-$start))
-echo $elapsed
 if [ $elapsed -ge 600 ]
 then
 	echo "Waited 5 minutes and pod is not running "
@@ -119,16 +121,16 @@ EOF
 start=$(date +%s)
 
 
-while true;do
+while true
+do
 status=`oc get pods -n openshift-storage | grep topolvm-controller`
-echo $status
+end=$(date +%s)
+elapsed=$(($end-$start))
+echo $status+" "+$elapsed+" sec since check start "+$start
 if [[ $status == *"Running"* ]]
 then
 	break
 fi
-end=$(date +%s)
-elapsed=$(($end-$start))
-echo $elapsed
 if [ $elapsed -ge 600 ]
 then
 	echo "Waited 5 minutes and pod is not running "

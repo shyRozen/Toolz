@@ -32,7 +32,6 @@ spec:
     base64data: ''
     mediatype: ''
   image: quay.io/rhceph-dev/ocs-registry:$version
-  publisher: Red Hat
   sourceType: grpc
 EOF
 
